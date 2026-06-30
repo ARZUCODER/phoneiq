@@ -1,0 +1,29 @@
+services:
+  api:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT:-ilm-ai-app}
+      VERTEX_LOCATION: us-central1
+      VERTEX_MODEL: gemini-2.5-flash
+      GOOGLE_APPLICATION_CREDENTIALS: /app/service-account.json
+      DB_DSN: ${DB_DSN:-}
+    volumes:
+      - ./backend/service-account.json:/app/service-account.json:ro
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: phoneiq
+      POSTGRES_PASSWORD: phoneiq
+      POSTGRES_DB: phoneiq
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

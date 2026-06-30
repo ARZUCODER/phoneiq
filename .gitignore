@@ -1,0 +1,13 @@
+backend/service-account.json
+backend/.env
+backend/.venv/
+**/__pycache__/
+*.pyc
+
+app/build/
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.firebase/
+
+.DS_Store
