@@ -73,6 +73,10 @@ def recommend(budget_max_uzs=0, usage="", brand="", limit=3):
         if filtered:
             items = filtered
 
+    if budget_max_uzs and budget_max_uzs > 0:
+        cap = budget_max_uzs * 1.05
+        items = [p for p in items if p["price_uzs"] <= cap]
+
     wanted = []
     for key, tags in _USAGE_TAGS.items():
         if usage and key in usage.lower():
@@ -80,15 +84,8 @@ def recommend(budget_max_uzs=0, usage="", brand="", limit=3):
             break
 
     def score(p):
-        s = 0.0
-        if budget_max_uzs and budget_max_uzs > 0:
-            if p["price_uzs"] <= budget_max_uzs:
-                s += 100 + (p["price_uzs"] / budget_max_uzs) * 20
-            else:
-                s -= (p["price_uzs"] - budget_max_uzs) / 1000000.0
-        if wanted:
-            s += 25 * len(set(wanted) & set(p["tags"]))
-        return s
+        match = len(set(wanted) & set(p["tags"])) if wanted else 0
+        return (match, p["price_uzs"])
 
     ranked = sorted(items, key=score, reverse=True)
     return ranked[:limit]

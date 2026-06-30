@@ -1,4 +1,5 @@
 import json
+import re
 import time
 
 from vertexai.generative_models import Tool, FunctionDeclaration, Part
@@ -13,6 +14,7 @@ from vertex_client import (
 )
 
 _SYSTEM = """Sen "PhoneIQ" — O'zbekiston bozori uchun aqlli telefon tanlash maslahatchisisan.
+Bugungi sana: 2026-yil iyul.
 
 Sening vositalaring:
 - recommend_phones: do'kon katalogimizdagi YANGI telefonlardan byudjet, maqsad va brend bo'yicha tanlash uchun.
@@ -25,6 +27,7 @@ Qoidalar:
 - HECH QACHON "yo'q", "topilmadi", "bunaqasi yo'q" deb tugatma. Doim muqobil taklif qil.
 - Agar foydalanuvchi aniq brend va past byudjet aytsa (masalan "iPhone 5 mln") va katalogdagi YANGI {brend} telefonlari bu byudjetdan qimmat bo'lsa — DARHOL search_used_phones bilan OLX'dan o'sha brendning ISHLATILGAN variantlarini o'sha byudjetda qidir. Kerak bo'lsa yangi modeli qanchadan boshlanishini ham ayt.
 - Eng yangi modellar, joriy/real narx yoki katalogda yo'q telefon so'ralsa — search_web ishlat. Katalog narxlari taxminiy "do'kon narxi", aniq joriy narx kerak bo'lsa search_web bilan tekshir.
+- MUHIM: sening ichki biling 2026-yildan eskiroq. Yangi modellar va narxlarda DOIM search_web natijasiga ishon, o'z xotirangga emas. Masalan iPhone 17 seriyasi 2025-yil sentabrda CHIQQAN — "hali chiqmagan" deb AYTMA. Avval search_web bilan tekshirib, faqat natijaga asoslanib javob ber.
 - Foydalanuvchi narx aytsa (masalan "1000$"), so'mga aylantir (1$ ≈ 12600 so'm).
 - Foydalanuvchi qaysi tilda yozsa, o'sha tilda javob ber. Qisqa, samimiy va aniq bo'l.
 - Tavsiya sababini tushuntir. Katalog narxini o'zing o'ylab topma, faqat vosita natijalaridan foydalan.
@@ -110,9 +113,27 @@ def _fallback(history, user_text):
     }
 
 
+_GROUND_RE = re.compile(
+    r"(eng yangi|yangi model|so'nggi|songgi|latest|narx|price|qancha|"
+    r"стоит|почем|iphone 1[6-9]|iphone 2\d|s2[5-9]|galaxy s\d\d)",
+    re.IGNORECASE,
+)
+
+
 def _run_agent(history, user_text):
     try:
-        model = chat_model(_SYSTEM, [_TOOL])
+        system = _SYSTEM
+        if _GROUND_RE.search(user_text):
+            info = grounded_search(user_text)
+            if info:
+                system = (
+                    _SYSTEM
+                    + "\n\nJORIY INTERNET MA'LUMOTI (2026-yil, ishonchli manba):\n"
+                    + info
+                    + "\n\nYuqoridagi joriy ma'lumotga TO'LIQ ishon va shundan "
+                    "foydalanib javob ber. 'Hali chiqmagan' kabi eski xulosa berma."
+                )
+        model = chat_model(system, [_TOOL])
         chat = model.start_chat(history=history_contents(history))
         resp = chat.send_message(user_text)
         phones, used = [], []

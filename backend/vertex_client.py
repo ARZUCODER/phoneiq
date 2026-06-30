@@ -76,8 +76,12 @@ def grounded_search(query: str) -> str:
         f"https://{_LOCATION}-aiplatform.googleapis.com/v1/projects/{_PROJECT}"
         f"/locations/{_LOCATION}/publishers/google/models/{_MODEL}:generateContent"
     )
+    framed = (
+        "Bugungi sana: 2026-yil iyul. Quyidagi savolga faqat eng so'nggi, "
+        "joriy (2026) ma'lumot va narxlar asosida javob ber: " + query
+    )
     payload = {
-        "contents": [{"role": "user", "parts": [{"text": query}]}],
+        "contents": [{"role": "user", "parts": [{"text": framed}]}],
         "tools": [{"google_search": {}}],
         "generationConfig": {"temperature": 0.3},
     }
