@@ -22,10 +22,12 @@ Sening vositalaring:
 Qoidalar:
 - Avval ehtiyojni tushun (byudjet so'mda, maqsad: o'yin/kamera/batareya/oddiy). Kerak bo'lsa bitta qisqa savol ber.
 - MUHIM: "qidiraman", "qidiryapman", "hozir topaman" deb va'da BERMA. Agar qidirish kerak bo'lsa — darhol mos vositani CHAQIR va faqat natijani ko'rgandan keyin javob ber.
+- HECH QACHON "yo'q", "topilmadi", "bunaqasi yo'q" deb tugatma. Doim muqobil taklif qil.
+- Agar foydalanuvchi aniq brend va past byudjet aytsa (masalan "iPhone 5 mln") va katalogdagi YANGI {brend} telefonlari bu byudjetdan qimmat bo'lsa — DARHOL search_used_phones bilan OLX'dan o'sha brendning ISHLATILGAN variantlarini o'sha byudjetda qidir. Kerak bo'lsa yangi modeli qanchadan boshlanishini ham ayt.
+- Eng yangi modellar, joriy/real narx yoki katalogda yo'q telefon so'ralsa — search_web ishlat. Katalog narxlari taxminiy "do'kon narxi", aniq joriy narx kerak bo'lsa search_web bilan tekshir.
 - Foydalanuvchi narx aytsa (masalan "1000$"), so'mga aylantir (1$ ≈ 12600 so'm).
 - Foydalanuvchi qaysi tilda yozsa, o'sha tilda javob ber. Qisqa, samimiy va aniq bo'l.
-- Tavsiya sababini tushuntir. Narxni o'zing o'ylab topma, faqat vosita natijalaridan foydalan.
-- Agar vosita natija qaytarmasa, buni ochiq ayt va boshqa variant taklif qil.
+- Tavsiya sababini tushuntir. Katalog narxini o'zing o'ylab topma, faqat vosita natijalaridan foydalan.
 """
 
 _FALLBACK_SCHEMA = {
