@@ -1,4 +1,5 @@
 import json
+import time
 
 from vertexai.generative_models import Tool, FunctionDeclaration, Part
 
@@ -20,9 +21,11 @@ Sening vositalaring:
 
 Qoidalar:
 - Avval ehtiyojni tushun (byudjet so'mda, maqsad: o'yin/kamera/batareya/oddiy). Kerak bo'lsa bitta qisqa savol ber.
-- Mos vositani chaqir. Foydalanuvchi narx aytsa (masalan "1000$"), so'mga aylantir (1$ ≈ 12600 so'm).
+- MUHIM: "qidiraman", "qidiryapman", "hozir topaman" deb va'da BERMA. Agar qidirish kerak bo'lsa — darhol mos vositani CHAQIR va faqat natijani ko'rgandan keyin javob ber.
+- Foydalanuvchi narx aytsa (masalan "1000$"), so'mga aylantir (1$ ≈ 12600 so'm).
 - Foydalanuvchi qaysi tilda yozsa, o'sha tilda javob ber. Qisqa, samimiy va aniq bo'l.
 - Tavsiya sababini tushuntir. Narxni o'zing o'ylab topma, faqat vosita natijalaridan foydalan.
+- Agar vosita natija qaytarmasa, buni ochiq ayt va boshqa variant taklif qil.
 """
 
 _FALLBACK_SCHEMA = {
@@ -105,7 +108,7 @@ def _fallback(history, user_text):
     }
 
 
-def recommend(history, user_text):
+def _run_agent(history, user_text):
     try:
         model = chat_model(_SYSTEM, [_TOOL])
         chat = model.start_chat(history=history_contents(history))
@@ -148,4 +151,29 @@ def recommend(history, user_text):
 
         return {"reply": _safe_text(resp), "phones": phones, "used": used}
     except Exception:
+        raise
+
+
+def _is_quota(e):
+    s = str(e)
+    return "429" in s or "Resource exhausted" in s or "RESOURCE_EXHAUSTED" in s
+
+
+def recommend(history, user_text):
+    for attempt in range(3):
+        try:
+            return _run_agent(history, user_text)
+        except Exception as e:
+            if _is_quota(e) and attempt < 2:
+                time.sleep(2 * (attempt + 1))
+                continue
+            break
+    try:
         return _fallback(history, user_text)
+    except Exception:
+        return {
+            "reply": "Hozir AI tizimi band (so'rovlar limiti). Iltimos, "
+            "bir-ikki daqiqadan so'ng qayta urinib ko'ring.",
+            "phones": [],
+            "used": [],
+        }

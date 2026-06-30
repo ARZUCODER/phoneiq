@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'api.dart';
 import 'glass.dart';
+import 'markdown.dart';
 import 'models.dart';
 
 void main() {
@@ -252,15 +253,24 @@ class _ChatScreenState extends State<ChatScreen> {
                   border: Border.all(
                       color: Colors.white.withValues(alpha: 0.18), width: 1),
                 ),
-                child: Text(
-                  m.text,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    height: 1.4,
-                    fontWeight: isUser ? FontWeight.w500 : FontWeight.w400,
-                  ),
-                ),
+                child: isUser
+                    ? Text(
+                        m.text,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          height: 1.4,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    : MarkdownText(
+                        m.text,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          height: 1.4,
+                        ),
+                      ),
               ),
             ),
             if (m.phones.isNotEmpty)

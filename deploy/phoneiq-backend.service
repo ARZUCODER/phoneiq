@@ -1,0 +1,17 @@
+[Unit]
+Description=PhoneIQ API (Python, native)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/phoneiq/backend
+Environment=GOOGLE_CLOUD_PROJECT=ilm-ai-app
+Environment=VERTEX_LOCATION=us-central1
+Environment=VERTEX_MODEL=gemini-2.5-flash
+Environment=GOOGLE_APPLICATION_CREDENTIALS=/opt/phoneiq/backend/service-account.json
+ExecStart=/opt/phoneiq/backend/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8090
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
