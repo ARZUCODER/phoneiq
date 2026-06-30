@@ -5,7 +5,7 @@ database based on a customer's budget and needs. The user chats in natural
 language (Uzbek, Russian or English) and the agent grounds every answer in the
 catalog, returning structured recommendations rendered as phone cards.
 
-**Live demo:** https://phoneiq-ai-2026.web.app
+**Live demo:** https://phoneiq.arzucoder.uz
 
 ## Architecture
 
