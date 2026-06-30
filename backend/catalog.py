@@ -51,6 +51,49 @@ def by_ids(ids: List[str]) -> List[Dict[str, Any]]:
     return result
 
 
+_USAGE_TAGS = {
+    "gaming": ["gaming", "performance"],
+    "oyin": ["gaming", "performance"],
+    "camera": ["camera", "zoom", "leica"],
+    "kamera": ["camera", "zoom", "leica"],
+    "battery": ["battery", "charging"],
+    "batareya": ["battery", "charging"],
+    "budget": ["budget", "value", "cheap"],
+    "arzon": ["budget", "value", "cheap"],
+    "premium": ["flagship", "premium"],
+    "flagship": ["flagship", "premium"],
+}
+
+
+def recommend(budget_max_uzs=0, usage="", brand="", limit=3):
+    items = all_phones()
+    if brand:
+        b = brand.lower()
+        filtered = [p for p in items if b in p["brand"].lower()]
+        if filtered:
+            items = filtered
+
+    wanted = []
+    for key, tags in _USAGE_TAGS.items():
+        if usage and key in usage.lower():
+            wanted = tags
+            break
+
+    def score(p):
+        s = 0.0
+        if budget_max_uzs and budget_max_uzs > 0:
+            if p["price_uzs"] <= budget_max_uzs:
+                s += 100 + (p["price_uzs"] / budget_max_uzs) * 20
+            else:
+                s -= (p["price_uzs"] - budget_max_uzs) / 1000000.0
+        if wanted:
+            s += 25 * len(set(wanted) & set(p["tags"]))
+        return s
+
+    ranked = sorted(items, key=score, reverse=True)
+    return ranked[:limit]
+
+
 def catalog_for_prompt() -> str:
     lines = []
     for p in all_phones():

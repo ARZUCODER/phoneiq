@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'api.dart';
 import 'glass.dart';
@@ -46,8 +47,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<String> _suggestions = const [
     '3 mln so\'mgacha kamerasi zo\'r telefon',
     'O\'yin uchun eng yaxshi telefon',
-    'Uzoq batareya, arzon',
-    'iPhone tavsiya qiling',
+    'OLX dan ishlatilgan iPhone 11 top',
+    'Samsung S25 Ultra haqida ma\'lumot',
   ];
 
   Future<void> _send(String text) async {
@@ -269,9 +270,113 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: m.phones.map(_phoneCard).toList(),
                 ),
               ),
+            if (m.used.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Column(
+                  children: m.used.map(_usedCard).toList(),
+                ),
+              ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _usedCard(UsedListing u) {
+    return GestureDetector(
+      onTap: () async {
+        final uri = Uri.tryParse(u.url);
+        if (uri != null) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        child: Glass(
+          radius: 18,
+          blur: 12,
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: u.image.isEmpty
+                    ? _imgFallback()
+                    : Image.network(
+                        u.image,
+                        width: 72,
+                        height: 72,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _imgFallback(),
+                      ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF7CF5EE).withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text('OLX · b/u',
+                              style: TextStyle(
+                                  color: Color(0xFF7CF5EE),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700)),
+                        ),
+                        const Spacer(),
+                        const Icon(Icons.open_in_new,
+                            color: Colors.white38, size: 14),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(u.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 2),
+                    Text(u.price,
+                        style: const TextStyle(
+                            color: Color(0xFF7CF5EE),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700)),
+                    if (u.location.isNotEmpty)
+                      Text(u.location,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: Colors.white54, fontSize: 11)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _imgFallback() {
+    return Container(
+      width: 72,
+      height: 72,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2BD9D0), Color(0xFF8B7CF8)],
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Icon(Icons.smartphone, color: Colors.white, size: 28),
     );
   }
 

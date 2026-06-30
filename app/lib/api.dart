@@ -27,10 +27,14 @@ class ApiClient {
     final phones = (data['phones'] as List? ?? const [])
         .map((e) => Phone.fromJson(e as Map<String, dynamic>))
         .toList();
+    final used = (data['used'] as List? ?? const [])
+        .map((e) => UsedListing.fromJson(e as Map<String, dynamic>))
+        .toList();
     return ChatMessage(
       role: 'assistant',
       text: data['reply'] ?? '',
       phones: phones,
+      used: used,
     );
   }
 }

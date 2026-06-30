@@ -1,6 +1,7 @@
 backend/service-account.json
 backend/.env
 backend/.venv/
+backend/*.log
 **/__pycache__/
 *.pyc
 

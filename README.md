@@ -19,10 +19,17 @@ FastAPI backend (Python)
         └── Vertex AI      → Gemini 2.5 Flash (service-account auth)
 ```
 
-The model never invents products: the full catalog is injected as grounding
-context and the response is constrained to a JSON schema
-(`{ reply, recommended_ids }`). The backend resolves the returned ids against
-the database and returns full phone objects to the client.
+The agent is built on Gemini function calling with three tools:
+
+- **recommend_phones** — selects new phones from the store catalog by budget,
+  use case and brand.
+- **search_used_phones** — live search of used listings on OLX (olx.uz).
+- **search_web** — current information (prices, new models, comparisons) via
+  Vertex AI Google Search grounding.
+
+The model decides which tools to call, the backend executes them and feeds the
+results back, then the model produces the final answer. Catalog results render
+as spec cards and OLX results render as listing cards linking back to olx.uz.
 
 ## Tech stack
 

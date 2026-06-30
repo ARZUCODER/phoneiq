@@ -60,10 +60,42 @@ class Phone {
   }
 }
 
+class UsedListing {
+  final String title;
+  final String price;
+  final String url;
+  final String image;
+  final String location;
+
+  UsedListing({
+    required this.title,
+    required this.price,
+    required this.url,
+    required this.image,
+    required this.location,
+  });
+
+  factory UsedListing.fromJson(Map<String, dynamic> j) {
+    return UsedListing(
+      title: j['title'] ?? '',
+      price: j['price'] ?? '',
+      url: j['url'] ?? '',
+      image: j['image'] ?? '',
+      location: j['location'] ?? '',
+    );
+  }
+}
+
 class ChatMessage {
   final String role;
   final String text;
   final List<Phone> phones;
+  final List<UsedListing> used;
 
-  ChatMessage({required this.role, required this.text, this.phones = const []});
+  ChatMessage({
+    required this.role,
+    required this.text,
+    this.phones = const [],
+    this.used = const [],
+  });
 }
